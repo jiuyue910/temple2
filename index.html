@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上寺廟點燈系統</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="nav-bar">
+        <div class="nav-brand-container" onclick="showSection('section-main')">
+            <div class="nav-logo">
+                <img src="temple.png" alt="點燈Logo" id="logo-img">
+            </div>
+            <span class="nav-system-title">線上寺廟點燈系統</span>
+        </div>
+        <nav class="nav-menu">
+            <button class="nav-link-btn" onclick="showSection('section-main')">主頁</button>
+            <button class="nav-link-btn" onclick="checkAuthAndGo('list')">線上點燈</button>
+            <button class="nav-link-btn" id="nav-cart-btn" onclick="goToCartIfFormActive()">暫存訂單 <span id="cart-count">0</span></button>
+            <button class="nav-auth-btn" id="nav-login-toggle" onclick="handleLoginClick()">Login / 註冊</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="section-main" class="section active">
+            <div class="dashboard-layout">
+                <div class="dash-left">
+                    <div class="dash-card widget-notice">
+                        <h3>📢 廟宇最新公告</h3>
+                        <ul class="notice-list">
+                            <li><span class="notice-date">2026/05</span> 丙戌年祈安慶成點燈法會開始預約。</li>
+                            <li><span class="notice-date">2026/04</span> 本宮系統升級！支援多筆訂單與常用人匯入。</li>
+                            <li><span class="notice-date">2026/03</span> 感謝信眾熱烈支持，五路財神燈即將額滿。</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dash-card widget-guide">
+                        <h3>⛩️ 三步驟輕鬆線上點燈</h3>
+                        <div class="guide-steps">
+                            <div class="step-item"><span class="step-num">1</span>選定心儀廟宇燈種</div>
+                            <div class="step-item"><span class="step-num">2</span>在燈牆挑選專屬吉位</div>
+                            <div class="step-item"><span class="step-num">3</span>填寫疏文資料一次下單</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-right">
+                    <div class="dash-card widget-profile">
+                        <div class="profile-header">
+                            <div class="profile-avatar">👤</div>
+                            <div class="profile-info">
+                                <h3 id="dash-username">信眾您好</h3>
+                                <p id="auth-status">狀態：尚未登入</p>
+                            </div>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-box"><strong>-</strong><span>年度點燈</span></div>
+                            <div class="stat-box"><strong>-</strong><span>暫存訂單</span></div>
+                        </div>
+                    </div>
+
+                    <div class="menu-grid">
+                        <button class="btn" onclick="checkAuthAndGo('list')"><span>⛩️</span>選寺廟點燈</button>
+                        <button class="btn" onclick="checkAuthAndGo('profile')"><span>📝</span>更新常用人資料</button>
+                        <button class="btn" onclick="checkAuthAndGo('orders')"><span>🔍</span>查詢訂單紀錄</button>
+                        <button class="btn login-btn" id="login-toggle-btn" onclick="handleLoginClick()">Login / 註冊</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-list" class="section">
+            <h2>請選擇欲點燈的寺廟</h2>
+            <div class="temple-grid">
+                <div class="temple-card" onclick="openTemple('慈雲宮')"><h3>慈雲宮</h3><p>天上聖母</p></div>
+                <div class="temple-card" onclick="openTemple('龍安寺')"><h3>龍安寺</h3><p>觀世音菩薩</p></div>
+                <div class="temple-card" onclick="openTemple('財神廟')"><h3>五路財神廟</h3><p>生意興隆</p></div>
+            </div>
+            <span class="back-link" onclick="showSection('section-main')">返回主選單</span>
+        </div>
+
+        <div id="section-detail" class="section">
+            <h2 id="display-temple-name">寺廟名稱</h2>
+            <div class="temple-detail-layout">
+                <div class="side-info"><div style="font-size:80px; margin-bottom:20px;">⛩️</div><p id="display-temple-desc" style="line-height:1.6;">介紹內容...</p></div>
+                <div class="lamp-list" id="display-lamp-list"></div>
+            </div>
+            <span class="back-link" onclick="showSection('section-list')">回寺廟列表</span>
+        </div>
+
+        <div id="section-grid" class="section">
+            <h2>點燈位置選擇</h2>
+            <div class="legend">
+                <span><div class="dot" style="background:var(--status-taken)"></div> 已點燈</span>
+                <span><div class="dot" style="background:var(--status-available)"></div> 可點燈</span>
+                <span><div class="dot" style="background:var(--status-selecting)"></div> 您選的位置</span>
+            </div>
+            <div class="altar-layout">
+                <div class="pillar" id="left-pillar"></div>
+                <div class="center-altar">
+                    <div class="god-image">神像圖片</div>
+                    <div class="info-board" id="grid-info-board">
+                        <p style="color:#999; text-align:center; font-size:1.2rem; margin-top: 50px;">請點擊燈位查看資訊</p>
+                    </div>
+                </div>
+                <div class="pillar" id="right-pillar"></div>
+            </div>
+            <span class="back-link" onclick="showSection('section-detail')">回燈種選擇</span>
+        </div>
+
+        <div id="section-form" class="section">
+            <h1>點燈資料填寫</h1>
+            <p id="current-pos-display" style="text-align:center; font-weight:bold; color:var(--status-selecting); margin-bottom:10px;"></p>
+            <div class="form-layout">
+                <div class="form-left">
+                    <div style="display: flex; gap: 20px;">
+                        <div class="input-group" style="flex: 1;">
+                            <label>姓名</label>
+                            <input type="text" id="form-name" placeholder="請輸入姓名">
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label>聯絡電話</label>
+                            <input type="text" id="form-phone" placeholder="請輸入電話">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 20px;">
+                        <div class="input-group" style="flex: 2;">
+                            <label>國曆生日</label>
+                            <input type="date" id="form-birth">
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label>出生時辰 (選填)</label>
+                            <select id="form-time">
+                                <option>吉時 (不清楚)</option>
+                                <option>子 (23-01)</option><option>丑 (01-03)</option><option>寅 (03-05)</option>
+                                <option>卯 (05-07)</option><option>辰 (07-09)</option><option>巳 (09-11)</option>
+                                <option>午 (11-13)</option><option>未 (13-15)</option><option>申 (15-17)</option>
+                                <option>酉 (17-19)</option><option>戌 (19-21)</option><option>亥 (21-23)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>居住住址 (讀疏文用)</label>
+                        <input type="text" id="form-addr" placeholder="請輸入住址">
+                    </div>
+
+                    <div class="input-group">
+                        <label>祈福心願 (選填)</label>
+                        <textarea id="form-wish" rows="3" placeholder="請輸入您的祈福心願..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-right">
+                    <div class="action-card">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="save-frequent" checked> 加入常用點燈人
+                        </label>
+                        <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">資料將同步至資料庫，方便下次使用</p>
+                    </div>
+                    <button class="import-btn" onclick="importFrequent()">匯入常用人</button>
+                </div>
+            </div>
+
+            <div id="order-preview-container" class="order-preview-container">
+                <h3 style="color: #666; margin-bottom: 10px;">已選訂單清單 (點擊下方項目可直接回填修改)</h3>
+                <div id="order-preview-list" class="order-preview-list">
+                    <p style="color: #ccc; text-align: center; padding: 20px;">尚未有暫存訂單</p>
+                </div>
+            </div>
+
+            <div class="submit-container">
+                <button class="add-order-btn" onclick="addAnotherOrder()">新增其他訂單</button>
+                <button class="checkout-btn" onclick="submitFinalOrder()">下訂單</button>
+            </div>
+            
+            <span class="back-link" onclick="showSection('section-grid')">返回重選位置</span>
+        </div>
+
+        <div id="section-login" class="section">
+            <div style="max-width: 400px; margin: 50px auto; width: 100%;">
+                <h1>會員登入</h1>
+                <div style="margin-bottom:15px;"><label>帳號</label><input type="text" id="username" style="width:100%; padding:15px; margin-top:5px; border-radius:8px; border:1px solid #ddd;"></div>
+                <div style="margin-bottom:15px;"><label>密碼</label><input type="password" id="password" style="width:100%; padding:15px; margin-top:5px; border-radius:8px; border:1px solid #ddd;"></div>
+                <button class="btn login-btn" style="width:100%;" onclick="doLogin()">確認登入</button>
+                <span class="back-link" onclick="showSection('section-main')">取消返回</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="grid-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modal-grid-title" style="margin-bottom: 20px;">請選擇下一個位置</h2>
+            <div class="legend" style="transform: scale(0.85);">
+                <span><div class="dot" style="background:var(--status-taken)"></div> 已點燈</span>
+                <span><div class="dot" style="background:var(--status-available)"></div> 可點燈</span>
+                <span><div class="dot" style="background:var(--status-selecting)"></div> 您選的位置</span>
+            </div>
+            <div class="modal-altar-layout">
+                <div class="pillar" id="modal-left-pillar"></div>
+                <div class="pillar" id="modal-right-pillar"></div>
+            </div>
+            <p style="text-align:center; color:#888; margin-top:15px;">點擊可用位置後將自動跳轉至資料填寫</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
