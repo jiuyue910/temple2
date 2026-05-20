@@ -170,7 +170,7 @@ body {
     padding: 12px 0;
     border-bottom: 1px solid #f8f9fa;
     color: #555;
-    font-size: 0.95rem;
+    font-size: 1.10rem;
 }
 
 .notice-date {
@@ -178,7 +178,7 @@ body {
     color: var(--primary-color);
     padding: 2px 8px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 1.10rem;
     font-weight: bold;
     margin-right: 10px;
 }
@@ -195,7 +195,7 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
-    font-size: 1rem;
+    font-size: 1.10rem;
     color: #444;
 }
 
@@ -209,6 +209,7 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    font-size: 1.1rem;
 }
 
 /* 会员資訊卡 */
@@ -376,7 +377,7 @@ h1, h2 { text-align: center; color: var(--primary-color); margin: 10px 0; }
 input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; }
 label { font-weight: bold; color: #555; display: block; margin-top: 15px; text-align: left; }
 
-.form-layout { display: flex; gap: 40px; max-width: 1200px; margin: 20px auto; width: 100%; flex: 1; }
+.form-layout { display: flex; gap: 40px; max-width: 1500px; margin: 20px auto; width: 100%; flex: 1; }
 .form-left { flex: 2.3; background: #fff; padding: 30px; border: 1px solid #eee; border-radius: 20px; }
 .form-right { flex: 1; display: flex; flex-direction: column; gap: 25px; min-width: 320px; }
 
