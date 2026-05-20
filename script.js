@@ -56,26 +56,34 @@ function doLogin() {
 }
 
 function updateUI(username = "信眾") {
-    const btn = document.getElementById('login-toggle-btn');
-    const navBtn = document.getElementById('nav-login-toggle');
+    // 1. 只抓取「頂部功能列」的登入按鈕，不要去抓已經刪除的 login-toggle-btn
+    const navBtn = document.getElementById('nav-login-toggle'); 
     const status = document.getElementById('auth-status');
     const dashUser = document.getElementById('dash-username');
     
-    const text = isLoggedIn ? 'Log out' : 'Login / 註冊';
-    btn.innerText = text;
-    navBtn.innerText = text;
+    // 2. 根據狀態獲取文字內容（已登入顯示 Log out，未登入顯示 Login / 註冊）
+    const text = isLoggedIn ? 'Log out' : 'Login / 註冊'; 
     
-    btn.classList.toggle('logged-in', isLoggedIn);
-    navBtn.classList.toggle('logged-in', isLoggedIn);
-    status.innerText = isLoggedIn ? '狀態：已登入會員' : '狀態：尚未登入';
+    // 3. 只更新頂部導覽列按鈕的文字與樣式狀態
+    if (navBtn) {
+        navBtn.innerText = text; 
+        navBtn.classList.toggle('logged-in', isLoggedIn); 
+    }
     
-    // 同步升級：更新首頁儀表板狀態
+    // 4. 更新純文字狀態列
+    if (status) {
+        status.innerText = isLoggedIn ? '狀態：已登入會員' : '狀態：尚未登入'; 
+    }
+    
+    // 5. 更新首頁儀表板狀態
     if (isLoggedIn) {
-        dashUser.innerText = `${username} 居士`;
-        document.querySelectorAll('.profile-stats Strong')[0].innerText = "2"; // 模擬年度點了2盞燈
+        if (dashUser) dashUser.innerText = `${username} 居士`; 
+        const stats = document.querySelectorAll('.profile-stats strong'); 
+        if (stats.length > 0) stats[0].innerText = "2"; 
     } else {
-        dashUser.innerText = "信眾您好";
-        document.querySelectorAll('.profile-stats Strong')[0].innerText = "-";
+        if (dashUser) dashUser.innerText = "信眾您好"; 
+        const stats = document.querySelectorAll('.profile-stats strong'); 
+        if (stats.length > 0) stats[0].innerText = "-"; 
     }
 }
 
