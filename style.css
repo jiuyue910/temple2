@@ -116,7 +116,7 @@ body {
     background: #28a745;
 }
 
-/* --- 新增：首頁智慧儀表板 (Dashboard) 雙欄排版 --- */
+/* --- 首頁智慧儀表板 (Dashboard) 雙欄排版 --- */
 .dashboard-layout {
     display: flex;
     gap: 40px;
@@ -272,7 +272,7 @@ body {
 /* --- 首頁大選單排版調整 --- */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(1, 1fr); /* 在雙欄佈局下，按鈕改為一列堆疊更整齊 */
+    grid-template-columns: repeat(1, 1fr); 
     gap: 15px;
     width: 100%;
 }
@@ -292,7 +292,6 @@ body {
     gap: 10px;
 }
 .btn:hover { background: var(--primary-color); color: white; transform: translateY(-2px); }
-.login-btn { background: #343a40; color: white; }
 
 /* --- 主容器調整 --- */
 .container {
@@ -370,5 +369,35 @@ h1, h2 { text-align: center; color: var(--primary-color); margin: 10px 0; }
 .dot { width: 15px; height: 15px; border-radius: 3px; display: inline-block; vertical-align: middle; margin-right: 5px; }
 .section { display: none; height: 100%; }
 .section.active { display: flex; flex-direction: column; }
+
+/* ==========================================================================
+   全新補上與細改：點燈表單、常用人控制台 (全面解決 Checkbox 被拉長移位的 Bug)
+   ========================================================================== */
 input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; }
-label { font-weight: bold; color: #555; display: block; margin-top: 15px; }
+label { font-weight: bold; color: #555; display: block; margin-top: 15px; text-align: left; }
+
+.form-layout { display: flex; gap: 40px; max-width: 1200px; margin: 20px auto; width: 100%; flex: 1; }
+.form-left { flex: 2.3; background: #fff; padding: 30px; border: 1px solid #eee; border-radius: 20px; }
+.form-right { flex: 1; display: flex; flex-direction: column; gap: 25px; min-width: 320px; }
+
+/* 常用人勾選獨立圓角卡片 */
+.action-card { background: #f8f9fa; padding: 25px; border: 1px solid #e9ecef; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+
+.checkbox-container { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; font-size: 1rem; position: relative; user-select: none; width: 100%; }
+/* 覆蓋掉 input 全域樣式，強行將 Checkbox 隱藏以利客製化 */
+.checkbox-container input { opacity: 0; cursor: pointer; height: 0; width: 0; position: absolute; margin: 0; padding: 0; }
+
+/* 自定義正方形核取方塊圖示 */
+.checkmark { height: 22px; width: 22px; background-color: #fff; border: 2px solid #ced4da; border-radius: 6px; display: inline-block; flex-shrink: 0; position: relative; transition: 0.2s; margin-top: 2px; }
+.checkbox-container:hover input ~ .checkmark { border-color: var(--primary-color); }
+.checkbox-container input:checked ~ .checkmark { background-color: var(--primary-color); border-color: var(--primary-color); }
+.checkmark:after { content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 6px; height: 11px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.checkbox-container input:checked ~ .checkmark:after { display: block; }
+
+.checkbox-text { display: flex; flex-direction: column; text-align: left; }
+.checkbox-title { font-weight: bold; color: #333; font-size: 1.05rem; margin-bottom: 4px; }
+.checkbox-desc { font-size: 0.85rem; color: #868e96; line-height: 1.4; }
+
+/* 導入按鈕美化拉寬 */
+.import-btn { background: #fff; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 18px; width: 100%; border-radius: 20px; font-size: 1.15rem; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: center; box-shadow: 0 4px 10px rgba(230, 57, 70, 0.05); }
+.import-btn:hover { background: var(--primary-color); color: white; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(230, 57, 70, 0.15); }
