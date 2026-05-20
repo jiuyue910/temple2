@@ -120,7 +120,7 @@ body {
 .dashboard-layout {
     display: flex;
     gap: 40px;
-    max-width: 1200px;
+    max-width: 2000px;
     margin: 30px auto;
     width: 100%;
     align-items: flex-start;
