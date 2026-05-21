@@ -67,7 +67,6 @@
                         <button class="btn" onclick="checkAuthAndGo('list')"><span>⛩️</span>選寺廟點燈</button>
                         <button class="btn" onclick="checkAuthAndGo('profile')"><span>📝</span>更新常用人資料</button>
                         <button class="btn" onclick="checkAuthAndGo('orders')"><span>🔍</span>查詢訂單紀錄</button>
-                        
                     </div>
                 </div>
             </div>
@@ -182,6 +181,62 @@
             <span class="back-link" onclick="showSection('section-grid')">返回重選位置</span>
         </div>
 
+        <div id="section-profile" class="section">
+            <h2>📝 常用點燈人資料管理</h2>
+            
+            <div class="frequent-layout">
+                <div class="frequent-left">
+                    <div id="frequent-list" class="frequent-list-group">
+                        </div>
+                    <button class="add-frequent-btn" onclick="prepareNewFrequent()">＋ 新增常用人</button>
+                </div>
+
+                <div class="frequent-right" id="frequent-detail-card">
+                    <h3 id="frequent-form-title">請選擇或新增常用人</h3>
+                    
+                    <div id="frequent-form-body" style="display: none;">
+                        <input type="hidden" id="freq-id">
+                        
+                        <div class="input-group">
+                            <label>姓名</label>
+                            <input type="text" id="freq-name" placeholder="請輸入姓名">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>居住地址</label>
+                            <input type="text" id="freq-addr" placeholder="請輸入聯絡住址">
+                        </div>
+                        
+                        <div style="display: flex; gap: 20px;">
+                            <div class="input-group" style="flex: 1;">
+                                <label>聯絡電話</label>
+                                <input type="text" id="freq-phone" placeholder="請輸入電話">
+                            </div>
+                            <div class="input-group" style="flex: 1;">
+                                <label>國曆生日</label>
+                                <input type="date" id="freq-birth">
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>預設祈福心願 (選填)</label>
+                            <textarea id="freq-wish" rows="3" placeholder="請輸入預設的祈福心願..."></textarea>
+                        </div>
+                        
+                        <div style="text-align: right; margin-top: 25px;">
+                            <button class="save-freq-btn" onclick="saveFrequentData()">儲存</button>
+                        </div>
+                    </div>
+                    
+                    <div id="frequent-empty-msg" style="color: #aaa; text-align: center; padding-top: 120px; font-size: 1.1rem;">
+                        ← 請點選左側常用人查看或修改資料，或點擊左下方按鈕建立新成員。
+                    </div>
+                </div>
+            </div>
+
+            <span class="back-link" onclick="showSection('section-main')">返回主選單</span>
+        </div>
+
         <div id="section-login" class="section">
             <div style="max-width: 400px; margin: 50px auto; width: 100%;">
                 <h1>會員登入</h1>
@@ -213,5 +268,5 @@
     <script src="auth.js"></script>
     <script src="dashboard.js"></script>
     <script src="altar.js"></script>
-</body>
+    <script src="frequent.js"></script> </body>
 </html>
