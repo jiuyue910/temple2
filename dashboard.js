@@ -1,5 +1,5 @@
 /**
- * 更新首頁智慧儀表板狀態、導覽列與選選單按鈕 (動態支援特定管理員帳號切換)
+ * 更新首頁智慧儀表板狀態、導覽列與選單按鈕 (動態支援特定管理員帳號切換)
  * @param {string} username - 登入的會員名稱
  * @param {string} role - 帳號權限角色 ('user' 或 'admin')
  */
@@ -8,10 +8,10 @@ function updateDashboardUI(username = "信眾", role = "user") {
     const stats = document.querySelectorAll('.profile-stats strong'); 
     const statLabels = document.querySelectorAll('.profile-stats span');
     
-    // 獲取需要被動態變身的導覽列與大選單按鈕
-    const navLampBtn = document.querySelector(".nav-menu button:nth-child(2)"); // 線上點燈按鈕
-    const navCartBtn = document.getElementById("nav-cart-btn");                 // 暫存訂單按鈕
-    const menuGrid = document.querySelector(".menu-grid");                       // 主畫面右側選單組
+    // 獲取頂部導覽列按鈕 (透過精準的 ID 獲取)
+    const navLampBtn = document.getElementById("nav-lamp-btn"); // 線上點燈 / 會員管理
+    const navCartBtn = document.getElementById("nav-cart-btn"); // 暫存訂單 / 寺廟管理
+    const menuGrid = document.querySelector(".menu-grid");       // 主畫面右側選單組
 
     if (isLoggedIn) {
         if (dashUser) dashUser.innerText = role === 'admin' ? `${username} (管理員)` : `${username} 居士`; 
@@ -25,14 +25,21 @@ function updateDashboardUI(username = "信眾", role = "user") {
                 statLabels[1].innerText = "今日全宮點燈數";
             }
 
-            // 1. 頂部導覽列按鈕重寫成管理模式
-            if (navLampBtn) navLampBtn.innerText = "會員管理";
-            if (navCartBtn) navCartBtn.innerHTML = "寺廟管理";
+            // 🛠️ 核心修復：動態重寫頂部導覽列按鈕的文字與點擊事件 (onclick)
+            if (navLampBtn) {
+                navLampBtn.innerText = "會員管理";
+                navLampBtn.onclick = () => { showSection('section-member-admin'); renderAdminMemberTable('all'); };
+            }
+            if (navCartBtn) {
+                navCartBtn.innerHTML = "寺廟管理";
+                // 強制將點擊事件導向正確的寺廟後台初始化函式
+                navCartBtn.onclick = () => { loadAndOpenTempleAdmin(); };
+            }
 
-            // 2. 主畫面大按鈕變身為後端管理入口
+            // 主畫面大按鈕變身為後端管理入口
             if (menuGrid) {
                 menuGrid.innerHTML = `
-                    <button class="btn" style="background: #fff0f1; border: 1px solid #ffccd0;" onclick="showSection('section-member-admin')"><span>👥</span>會員權限與名單管理</button>
+                    <button class="btn" style="background: #fff0f1; border: 1px solid #ffccd0;" onclick="showSection('section-member-admin'); renderAdminMemberTable('all');"><span>👥</span>會員權限與名單管理</button>
                     <button class="btn" style="background: #f0f7ff; border: 1px solid #ccdf3f;" onclick="loadAndOpenTempleAdmin()"><span>⛩️</span>寺廟簡介與燈種維護</button>
                     <button class="btn" onclick="showSection('section-orders')"><span>🔍</span>查看全宮點燈名冊</button>
                 `;
@@ -59,13 +66,17 @@ function updateDashboardUI(username = "信眾", role = "user") {
 }
 
 /**
- * 還原回一般信眾的靜態前台按鈕
+ * 還原回一般信眾的靜態前台按鈕與事件
  */
 function restoreUserDashboardUI(navLampBtn, navCartBtn, menuGrid) {
-    if (navLampBtn) navLampBtn.innerText = "線上點燈";
+    if (navLampBtn) {
+        navLampBtn.innerText = "線上點燈";
+        navLampBtn.onclick = () => { checkAuthAndGo('list'); };
+    }
     if (navCartBtn) {
         const count = typeof tempOrders !== 'undefined' ? tempOrders.length : 0;
         navCartBtn.innerHTML = `暫存訂單 <span id="cart-count">${count}</span>`;
+        navCartBtn.onclick = () => { goToCartIfFormActive(); };
     }
     if (menuGrid) {
         menuGrid.innerHTML = `
@@ -77,14 +88,55 @@ function restoreUserDashboardUI(navLampBtn, navCartBtn, menuGrid) {
 }
 
 /**
+ * 控制寺廟管理內部的分頁籤 (Tabs) 切換邏輯
+ */
+function switchTempleAdminTab(buttonElement, tabType) {
+    buttonElement.parentElement.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+    buttonElement.classList.add('active');
+    
+    document.getElementById('temple-tab-info').style.style.display = tabType === 'info' ? 'block' : 'none';
+    document.getElementById('temple-tab-stock').style.style.display = tabType === 'stock' ? 'block' : 'none';
+}
+
+/**
  * 載入現有前端資料庫數值，並打開寺廟管理後端
  */
 function loadAndOpenTempleAdmin() {
-    showSection('section-temple-admin');
+    // 1. 強制隱藏所有前台點燈可能殘留的 Section，確保畫面乾淨
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    
+    // 2. 讓寺廟後台的 Section 顯示出來
+    const templeAdminSec = document.getElementById('section-temple-admin');
+    if (templeAdminSec) {
+        templeAdminSec.classList.add('active');
+    }
+    
+    window.scrollTo(0, 0);
+
+    // 3. 預設切換回第一個基本資料 Tab
+    const firstTabBtn = document.querySelector("#section-temple-admin .admin-tab-btn");
+    if (firstTabBtn) {
+        firstTabBtn.parentElement.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+        firstTabBtn.classList.add('active');
+    }
+    
+    const infoBlock = document.getElementById('temple-tab-info');
+    const stockBlock = document.getElementById('temple-tab-stock');
+    if (infoBlock) infoBlock.style.display = 'block';
+    if (stockBlock) stockBlock.style.display = 'none';
+
+    // 4. 填入數據
     if (typeof templeData !== 'undefined' && templeData['慈雲宮']) {
         document.getElementById('admin-temple-desc').value = templeData['慈雲宮'].desc;
         document.getElementById('admin-lamp0-stock').value = templeData['慈雲宮'].lamps[0].stock;
         document.getElementById('admin-lamp1-stock').value = templeData['慈雲宮'].lamps[1].stock;
+        
+        if (document.getElementById('display-lamp0-stock-text')) {
+            document.getElementById('display-lamp0-stock-text').innerText = templeData['慈雲宮'].lamps[0].stock;
+        }
+        if (document.getElementById('display-lamp1-stock-text')) {
+            document.getElementById('display-lamp1-stock-text').innerText = templeData['慈雲宮'].lamps[1].stock;
+        }
     }
 }
 
@@ -98,11 +150,12 @@ function saveTempleBackendChanges() {
     const updatedStock0 = document.getElementById('admin-lamp0-stock').value;
     const updatedStock1 = document.getElementById('admin-lamp1-stock').value;
 
-    // 變更記憶體核心全域變數，達成即時同步效果
     templeData['慈雲宮'].desc = updatedDesc;
     templeData['慈雲宮'].lamps[0].stock = updatedStock0;
     templeData['慈雲宮'].lamps[1].stock = updatedStock1;
 
+    if (document.getElementById('display-lamp0-stock-text')) document.getElementById('display-lamp0-stock-text').innerText = updatedStock0;
+    if (document.getElementById('display-lamp1-stock-text')) document.getElementById('display-lamp1-stock-text').innerText = updatedStock1;
+
     alert("💾 宮廟設定儲存成功！前端信眾選用畫面已同步即時發布。");
-    showSection('section-main');
 }

@@ -100,7 +100,12 @@ function goToCartIfFormActive() {
     }
 
     if (currentUserRole === 'admin') {
-        showSection('section-temple-admin'); // 特定帳號點擊導覽列直接進入寺廟管理
+        // 修正：不要只做 showSection，必須去呼叫 dashboard.js 裡面完整的初始化與載入資料邏輯
+        if (typeof loadAndOpenTempleAdmin === 'function') {
+            loadAndOpenTempleAdmin();
+        } else {
+            showSection('section-temple-admin');
+        }
     } else {
         if (typeof showSection === 'function') showSection('section-form');
     }
