@@ -7,8 +7,8 @@ let editingIndex = null; // 用於追蹤目前正在編輯清單中的哪一筆 
 
 // 模擬已點燈資料庫 (他人佔用)
 const mockOccupiedData = {
-    'L-0-5': { name: '李O耘', wish: '身體健康，萬事如意。' },
-    'R-2-3': { name: '王O明', wish: '祈求事業順利，發大財。' }
+    'L-0-5': { name: '李O耘', wish: '身體健康，萬事如意。', hideWish: false },
+    'R-2-3': { name: '王O明', wish: '祈求事業順利，發大財。', hideWish: true } // 測試隱藏心願
 };
 
 // 寺廟與燈種資料庫
@@ -101,9 +101,25 @@ function createPillar(elementId, prefix, count, isModal) {
  */
 function handleSlotClick(id) {
     const board = document.getElementById('grid-info-board');
-    if (mockOccupiedData[id] || tempOrders.some(o => o.posId === id)) {
-        const info = mockOccupiedData[id] || { name: '您已選的位置', wish: '-' };
-        board.innerHTML = `<h3 style="color:var(--status-taken)">位置資訊</h3><div class="info-item" style="font-size:1.4rem; margin: 20px 0;"><span class="info-label">姓名：</span>${info.name}</div><div class="info-item" style="font-size:1.4rem;"><span class="info-label">祈福內容：</span><br>${info.wish}</div>`;
+    const tempOrder = tempOrders.find(o => o.posId === id);
+    const mockOrder = mockOccupiedData[id];
+
+    if (mockOrder || tempOrder) {
+        const info = mockOrder || tempOrder;
+        
+        // 判斷是否隱藏祈福心願
+        const displayWish = info.hideWish 
+            ? '<span style="color:#888; font-style:italic;">此點燈人隱藏了他的祈福內容</span>' 
+            : info.wish;
+
+        board.innerHTML = `
+            <h3 style="color:var(--status-taken)">位置資訊</h3>
+            <div class="info-item" style="font-size:1.4rem; margin: 20px 0;">
+                <span class="info-label">姓名：</span>${info.name}
+            </div>
+            <div class="info-item" style="font-size:1.4rem;">
+                <span class="info-label">祈福內容：</span><br>${displayWish}
+            </div>`;
         clearSelection();
     } else {
         clearSelection();
@@ -173,7 +189,8 @@ function saveCurrentToTemp() {
         birth: document.getElementById('form-birth').value,
         time: document.getElementById('form-time').value,
         addr: document.getElementById('form-addr').value,
-        wish: document.getElementById('form-wish').value
+        wish: document.getElementById('form-wish').value,
+        hideWish: document.getElementById('form-hide-wish').checked // 儲存隱藏勾選狀態
     };
 
     if (editingIndex !== null) {
@@ -246,6 +263,8 @@ function editOrder(index) {
     document.getElementById('form-time').value = order.time;
     document.getElementById('form-addr').value = order.addr;
     document.getElementById('form-wish').value = order.wish;
+    document.getElementById('form-hide-wish').checked = order.hideWish || false; // 還原隱藏勾選
+    
     currentSelectedId = order.posId;
     document.getElementById('current-pos-display').innerText = `目前修改位置：${currentSelectedId}`;
     
@@ -280,6 +299,7 @@ function resetFormFields() {
     document.getElementById('form-birth').value = "";
     document.getElementById('form-addr').value = "";
     document.getElementById('form-wish').value = "";
+    document.getElementById('form-hide-wish').checked = false; // 重設核取方塊
     currentSelectedId = null;
     editingIndex = null;
     document.getElementById('current-pos-display').innerText = "";
@@ -345,16 +365,4 @@ function submitFinalOrder() {
     updateCartCount();
     resetFormFields();
     showSection('section-main');
-}
-
-/**
- * 快捷導入常用聯絡人資料
- */
-function importFrequent() {
-    document.getElementById('form-name').value = "王大明";
-    document.getElementById('form-phone').value = "0988-123-456";
-    document.getElementById('form-birth').value = "1990-01-01";
-    document.getElementById('form-addr').value = "台中市西屯區文華路100號";
-    document.getElementById('form-wish').value = "祈求全家平安健康。";
-    alert("已從資料庫匯入常用人資料。");
 }

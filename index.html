@@ -150,7 +150,14 @@
                     </div>
 
                     <div class="input-group">
-                        <label>祈福心願 (選填)</label>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <label style="margin-top: 0;">祈福心願 (選填)</label>
+                            <label class="checkbox-container" style="margin-top: 0; font-weight: normal; font-size: 0.95rem; width: auto;">
+                                <input type="checkbox" id="form-hide-wish">
+                                <span class="checkmark"></span>
+                                <span class="checkbox-text" style="flex-direction: row; align-items: center;">隱藏祈福內容</span>
+                            </label>
+                        </div>
                         <textarea id="form-wish" rows="3" placeholder="請輸入您的祈福心願..."></textarea>
                     </div>
                 </div>
@@ -187,7 +194,7 @@
             <div class="frequent-layout">
                 <div class="frequent-left">
                     <div id="frequent-list" class="frequent-list-group">
-                        </div>
+                    </div>
                     <button class="add-frequent-btn" onclick="prepareNewFrequent()">＋ 新增常用人</button>
                 </div>
 
@@ -268,5 +275,6 @@
     <script src="auth.js"></script>
     <script src="dashboard.js"></script>
     <script src="altar.js"></script>
-    <script src="frequent.js"></script> </body>
+    <script src="frequent.js"></script>
+</body>
 </html>

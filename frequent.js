@@ -138,6 +138,10 @@ function importFrequent() {
         document.getElementById('form-birth').value = defaultUser.birth;
         document.getElementById('form-addr').value = defaultUser.addr;
         document.getElementById('form-wish').value = defaultUser.wish;
+        
+        // 快捷匯入時，預設不隱藏心願
+        document.getElementById('form-hide-wish').checked = false;
+        
         alert(`已成功從常用人後台匯入「${defaultUser.name}」的資料。`);
     } else {
         alert("目前常用人名單內沒有資料，請先至後台新增。");
