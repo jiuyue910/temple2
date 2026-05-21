@@ -244,6 +244,79 @@
             <span class="back-link" onclick="showSection('section-main')">返回主選單</span>
         </div>
 
+        <div id="section-orders" class="section">
+            <h2>🔍 您的歷史點燈疏文紀錄</h2>
+            <div style="max-width: 1000px; margin: 20px auto; width: 100%;" id="orders-history-list">
+            </div>
+            <span class="back-link" onclick="showSection('section-main')">返回主選單</span>
+        </div>
+
+        <div id="section-member-admin" class="section">
+            <h2>👥 信眾與宮廟權限管理後端</h2>
+            
+            <div style="max-width: 1600px; margin: 20px auto; width: 100%; background: white; border-radius: 15px; border: 1px solid #eef0f2; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden;">
+                
+                <div class="admin-tabs-container" style="display: flex; background: #fafafa; border-bottom: 1px solid #ddd; overflow-x: auto;">
+                    <button class="admin-tab-btn active" onclick="switchAdminTab(this, 'all')">基本資料(全部)</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab(this, 'user')">一般信眾名冊</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab(this, 'admin')">宮廟管理員</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab(this, 'blacklist')">黑名單管控</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab(this, 'stats')">統計報表</button>
+                </div>
+
+                <div style="padding: 25px 30px; text-align: left; background: #fff; border-bottom: 1px solid #f1f3f5; font-size: 1.05rem; line-height: 1.8;">
+                    <div><strong>目前查詢權限：</strong> 宮廟最高主事人員 (系統管理員)</div>
+                    <div><strong>目前統計到：</strong> <span style="color: var(--primary-color); font-weight: bold;">115-1 期點燈法會</span></div>
+                </div>
+
+                <div style="padding: 30px; background: white; overflow-x: auto;">
+                    <table class="admin-data-table" style="width: 100%; border-collapse: collapse; min-width: 900px; text-align: left;">
+                        <thead>
+                            <tr style="background: #4a90e2; color: white; font-size: 1.05rem;">
+                                <th style="padding: 15px 20px; border: 1px solid #4a90e2;">會員帳號 / 學期數</th>
+                                <th style="padding: 15px 20px; border: 1px solid #4a90e2;">信眾姓名</th>
+                                <th style="padding: 15px 20px; border: 1px solid #4a90e2;">聯絡電話</th>
+                                <th style="padding: 15px 20px; border: 1px solid #4a90e2;">帳號權限</th>
+                                <th style="padding: 15px 20px; border: 1px solid #4a90e2;">年度已修點燈數</th>
+                                <th style="padding: 15px 20px; border: 1px solid #4a90e2;">後端管理操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-member-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <span class="back-link" onclick="showSection('section-main')">返回主選單</span>
+        </div>
+
+        <div id="section-temple-admin" class="section">
+            <h2>⛩️ 寺廟內政與燈種參數維護後端</h2>
+            <div style="max-width: 700px; margin: 30px auto; background: white; padding: 30px; border-radius: 15px; border: 1px solid #ddd; text-align: left;">
+                <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">宮廟基本資料維護：慈雲宮</h3>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">宮廟簡介修改</label>
+                    <textarea id="admin-temple-desc" rows="3" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; font-family: inherit;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">光明燈 庫存狀態</label>
+                        <input type="text" id="admin-lamp0-stock" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">太歲燈 庫存狀態</label>
+                        <input type="text" id="admin-lamp1-stock" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    </div>
+                </div>
+
+                <button class="btn" style="background: var(--primary-color); color: white; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold;" onclick="saveTempleBackendChanges()">💾 儲存設定並即時發布至前端</button>
+            </div>
+            <span class="back-link" onclick="showSection('section-main')">返回主選單</span>
+        </div>
+        
+
         <div id="section-login" class="section">
             <div style="max-width: 400px; margin: 50px auto; width: 100%;">
                 <h1>會員登入</h1>
@@ -276,5 +349,7 @@
     <script src="dashboard.js"></script>
     <script src="altar.js"></script>
     <script src="frequent.js"></script>
+    <script src="orders.js"></script>
+    <script src="memberAdmin.js"></script> </body>
 </body>
 </html>

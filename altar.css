@@ -197,3 +197,57 @@
     background: #218838;
     transform: translateY(-1px);
 }
+/* --- 後台管理員專用分頁籤 (Tabs) 樣式 --- */
+.admin-tab-btn {
+    background: transparent;
+    border: none;
+    padding: 15px 25px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+}
+.admin-tab-btn:hover {
+    color: #4a90e2;
+    background: #f1f3f5;
+}
+.admin-tab-btn.active {
+    color: #4a90e2;
+    border-bottom: 3px solid #4a90e2;
+    background: #ffffff;
+}
+
+/* --- 後台結構化表格 (Table) 樣式 --- */
+.admin-data-table th, .admin-data-table td {
+    border: 1px solid #e9ecef;
+    font-size: 1rem;
+}
+.admin-data-table td {
+    padding: 15px 20px;
+    color: #495057;
+}
+.admin-data-table tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+.admin-data-table tbody tr:hover {
+    background-color: #f5f9ff;
+}
+
+/* 操作按鈕小樣式 */
+.admin-op-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+.admin-op-btn:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
