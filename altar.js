@@ -1,109 +1,63 @@
-let isLoggedIn = false;
+// --- 點燈選位核心與購物車變數 ---
+let tempOrders = []; // 用於存放多筆訂單 (購物車)
 let currentSelectedId = null;
-let tempOrders = []; // 用於存放多筆訂單
 let currentTemple = "";
 let currentLamp = "";
 let editingIndex = null; // 用於追蹤目前正在編輯清單中的哪一筆 (null 代表新增)
 
-// 模擬已點燈資料庫
+// 模擬已點燈資料庫 (他人佔用)
 const mockOccupiedData = {
     'L-0-5': { name: '李O耘', wish: '身體健康，萬事如意。' },
     'R-2-3': { name: '王O明', wish: '祈求事業順利，發大財。' }
 };
 
+// 寺廟與燈種資料庫
 const templeData = {
     '慈雲宮': { totalLamps: 64, desc: '本廟創立於清乾隆年間，神威顯赫。', lamps: [{ name: '光明燈', desc: '祈求前途光明。', stock: '85/100' }, { name: '太歲燈', desc: '趨吉避凶。', stock: '42/50' }] },
     '龍安寺': { totalLamps: 32, desc: '主祀觀世音菩薩，適合祈求心靈平靜。', lamps: [{ name: '文昌燈', desc: '助益學業功名。', stock: '12/30' }, { name: '藥師燈', desc: '祈求身體健康。', stock: '28/40' }] },
-    '財神廟': { totalLamps: 90, desc: '全台聞名的求財聖地。', lamps: [{ name: '財神燈', desc: '招財進寶。', stock: '5/60' }, { name: '發財斗燈', desc: '生意興隆。', stock: '1/10' }] }
+    '財神廟': { totalLamps: 90, desc: '全台聞名的求財聖地。', lamps: [{ name: '財神燈', desc: '招財進寶', stock: '5/60' }, { name: '發財斗燈', desc: '生意興隆。', stock: '1/10' }] }
 };
 
+/**
+ * 切換顯示特定的 Section 區塊 (SPA 核心路由切換)
+ */
 function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
 }
 
-function checkAuthAndGo(target) {
-    if (!isLoggedIn) { 
-        alert('請先登入系統！'); 
-        showSection('section-login'); 
-    } else { 
-        if (target === 'list') showSection('section-list'); 
-        else alert('進入 ' + target + ' 功能'); 
-    }
-}
-
-function handleLoginClick() { 
-    if (isLoggedIn) { 
-        isLoggedIn = false; 
-        updateUI(); 
-        alert('已登出'); 
-    } else { 
-        showSection('section-login'); 
-    } 
-}
-
-function doLogin() {
-    const userVal = document.getElementById('username').value;
-    if (userVal && document.getElementById('password').value) {
-        isLoggedIn = true; 
-        updateUI(userVal); 
-        showSection('section-main'); 
-        alert('登入成功！');
-    } else { 
-        alert('請輸入帳號密碼'); 
-    }
-}
-
-function updateUI(username = "信眾") {
-    // 1. 只抓取「頂部功能列」的登入按鈕，不要去抓已經刪除的 login-toggle-btn
-    const navBtn = document.getElementById('nav-login-toggle'); 
-    const status = document.getElementById('auth-status');
-    const dashUser = document.getElementById('dash-username');
-    
-    // 2. 根據狀態獲取文字內容（已登入顯示 Log out，未登入顯示 Login / 註冊）
-    const text = isLoggedIn ? 'Log out' : 'Login / 註冊'; 
-    
-    // 3. 只更新頂部導覽列按鈕的文字與樣式狀態
-    if (navBtn) {
-        navBtn.innerText = text; 
-        navBtn.classList.toggle('logged-in', isLoggedIn); 
-    }
-    
-    // 4. 更新純文字狀態列
-    if (status) {
-        status.innerText = isLoggedIn ? '狀態：已登入會員' : '狀態：尚未登入'; 
-    }
-    
-    // 5. 更新首頁儀表板狀態
-    if (isLoggedIn) {
-        if (dashUser) dashUser.innerText = `${username} 居士`; 
-        const stats = document.querySelectorAll('.profile-stats strong'); 
-        if (stats.length > 0) stats[0].innerText = "2"; 
-    } else {
-        if (dashUser) dashUser.innerText = "信眾您好"; 
-        const stats = document.querySelectorAll('.profile-stats strong'); 
-        if (stats.length > 0) stats[0].innerText = "-"; 
-    }
-}
-
+/**
+ * 開啟指定寺廟，渲染燈種清單
+ */
 function openTemple(name) {
     currentTemple = name;
     const data = templeData[name];
     document.getElementById('display-temple-name').innerText = name;
     document.getElementById('display-temple-desc').innerText = data.desc;
+    
     const listContainer = document.getElementById('display-lamp-list');
     listContainer.innerHTML = ''; 
+    
     data.lamps.forEach(lamp => {
         const card = document.createElement('div');
         card.className = 'lamp-item';
         card.onclick = () => openGridPage(name, lamp.name);
-        card.innerHTML = `<div class="lamp-header"><span class="lamp-name" style="font-size:1.2rem;">${lamp.name}</span><span class="lamp-stock">庫存：${lamp.stock}</span></div><p class="lamp-desc">${lamp.desc}</p>`;
+        card.innerHTML = `
+            <div class="lamp-header">
+                <span class="lamp-name" style="font-size:1.2rem;">${lamp.name}</span>
+                <span class="lamp-stock">庫存：${lamp.stock}</span>
+            </div>
+            <p class="lamp-desc">${lamp.desc}</p>
+        `;
         listContainer.appendChild(card);
     });
     showSection('section-detail');
 }
 
+/**
+ * 進入大廳燈位選取頁面
+ */
 function openGridPage(templeName, lampName) {
     currentLamp = lampName;
     const total = Math.min(templeData[templeName].totalLamps || 32, 90);
@@ -111,6 +65,9 @@ function openGridPage(templeName, lampName) {
     showSection('section-grid');
 }
 
+/**
+ * 初始化兩側燈柱
+ */
 function initPillars(lId, rId, lPrefix, rPrefix, count) {
     createPillar(lId, lPrefix, count, false);
     createPillar(rId, rPrefix, count, false);
@@ -118,6 +75,9 @@ function initPillars(lId, rId, lPrefix, rPrefix, count) {
     document.getElementById('grid-info-board').innerHTML = '<p style="color:#999; text-align:center; font-size:1.2rem; margin-top: 50px;">請點擊燈位查看資訊</p>';
 }
 
+/**
+ * 動態繪製單個燈柱的格子
+ */
 function createPillar(elementId, prefix, count, isModal) {
     const el = document.getElementById(elementId);
     el.innerHTML = '';
@@ -136,6 +96,9 @@ function createPillar(elementId, prefix, count, isModal) {
     }
 }
 
+/**
+ * 處理一般頁面燈位點擊
+ */
 function handleSlotClick(id) {
     const board = document.getElementById('grid-info-board');
     if (mockOccupiedData[id] || tempOrders.some(o => o.posId === id)) {
@@ -153,12 +116,18 @@ function handleSlotClick(id) {
     }
 }
 
+/**
+ * 導向表單填寫頁面
+ */
 function goToForm() {
     document.getElementById('current-pos-display').innerText = `目前填寫位置：${currentSelectedId}`;
     showSection('section-form');
     renderOrderPreview(); 
 }
 
+/**
+ * 直接從導覽列或按鈕進入表單購物車頁面
+ */
 function goToCartIfFormActive() {
     if(isLoggedIn) {
         showSection('section-form');
@@ -169,6 +138,9 @@ function goToCartIfFormActive() {
     }
 }
 
+/**
+ * 清除目前選取格子的選取動畫狀態
+ */
 function clearSelection() {
     if (currentSelectedId) {
         const el = document.getElementById(currentSelectedId);
@@ -176,6 +148,9 @@ function clearSelection() {
     }
 }
 
+/**
+ * 點擊「再點一盞」按鈕，先暫存目前內容，再跳出彈窗選位
+ */
 function addAnotherOrder() {
     const name = document.getElementById('form-name').value;
     if(!name) { alert("請輸入姓名後再儲存！"); return; }
@@ -185,6 +160,9 @@ function addAnotherOrder() {
     openModalGrid();
 }
 
+/**
+ * 儲存/更新當前表單欄位資料至暫存陣列中
+ */
 function saveCurrentToTemp() {
     const orderData = {
         temple: currentTemple,
@@ -208,16 +186,22 @@ function saveCurrentToTemp() {
     updateCartCount();
 }
 
+/**
+ * 更新購物車角標與儀表板暫存統計
+ */
 function updateCartCount() {
     document.getElementById('cart-count').innerText = tempOrders.length;
     
-    // 首頁儀表板內的暫存數據同步更新
+    // 同步把數據回填給儀表板上的購物車數字標籤
     const dashCartCount = document.querySelectorAll('.profile-stats strong')[1];
     if (dashCartCount) {
         dashCartCount.innerText = tempOrders.length > 0 ? tempOrders.length : "0";
     }
 }
 
+/**
+ * 渲染表單旁的已選清單（購物車預覽區）
+ */
 function renderOrderPreview() {
     const container = document.getElementById('order-preview-list');
     if (tempOrders.length === 0) {
@@ -249,6 +233,9 @@ function renderOrderPreview() {
     });
 }
 
+/**
+ * 從清單中點擊載入，重新編輯某一筆訂單
+ */
 function editOrder(index) {
     const order = tempOrders[index];
     editingIndex = index;
@@ -266,6 +253,9 @@ function editOrder(index) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/**
+ * 從暫存清單中移除一筆訂單
+ */
 function deleteOrder(index) {
     event.stopPropagation();
     if (confirm("確定要移除這筆訂單嗎？")) {
@@ -281,6 +271,9 @@ function deleteOrder(index) {
     }
 }
 
+/**
+ * 重設表單所有輸入欄位與選位暫存
+ */
 function resetFormFields() {
     document.getElementById('form-name').value = "";
     document.getElementById('form-phone').value = "";
@@ -292,6 +285,9 @@ function resetFormFields() {
     document.getElementById('current-pos-display').innerText = "";
 }
 
+/**
+ * 開啟彈窗版的神明廳格子以供快速選下一盞燈的位置
+ */
 function openModalGrid() {
     const modal = document.getElementById('grid-modal');
     modal.style.display = "flex";
@@ -301,6 +297,9 @@ function openModalGrid() {
     createPillar('modal-right-pillar', 'R', count, true);
 }
 
+/**
+ * 處理彈窗內的燈位點擊
+ */
 function handleModalSlotClick(id) {
     const isTakenByOthers = tempOrders.some((o, idx) => o.posId === id && idx !== editingIndex);
     
@@ -313,10 +312,16 @@ function handleModalSlotClick(id) {
     closeModal();
 }
 
+/**
+ * 關閉選位彈窗
+ */
 function closeModal() {
     document.getElementById('grid-modal').style.display = "none";
 }
 
+/**
+ * 送出最終所有訂單完成點燈
+ */
 function submitFinalOrder() {
     const name = document.getElementById('form-name').value;
     
@@ -342,6 +347,9 @@ function submitFinalOrder() {
     showSection('section-main');
 }
 
+/**
+ * 快捷導入常用聯絡人資料
+ */
 function importFrequent() {
     document.getElementById('form-name').value = "王大明";
     document.getElementById('form-phone').value = "0988-123-456";
